@@ -9,9 +9,11 @@
 
     <div id="app">
     	
-
-
-    	<h3>{{ time }}</h3>
+      <ul v-for="(time, index) in times">
+        <li>
+          {{ index + 1 }} - {{ time.nome }} <img :src="time.escudo" /> 
+        </li>
+      </ul>
       
     </div>
 
