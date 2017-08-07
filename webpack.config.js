@@ -1,6 +1,8 @@
 var path = require('path')
 var webpack = require('webpack')
 
+process.traceDeprecation = false
+
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -31,10 +33,8 @@ module.exports = {
           name: '[name].[ext]?[hash]'
         }
       },
-      {
-        test: '/\.(woff|woff2|ttf|svg|eot)$/',
-        loader: 'url'
-      }
+      
+      { test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' }
     ]
   },
   resolve: {
@@ -49,6 +49,11 @@ module.exports = {
   performance: {
     hints: false
   },
+  plugins: [
+      new webpack.ProvidePlugin({
+          'jQuery': 'jquery'
+      })
+  ],
   devtool: '#eval-source-map'
 }
 
