@@ -12,37 +12,60 @@
       <div class="row">
         <div class="col-md-offset-1 col-md-6">
           <h3>Campeonatos Brasileiro - Série A - 2016</h3>
-          <table class="table table-striped">
+          <a class="btn btn-primary" @click.prevent="createNovoJogo">Novo Jogo</a>
+          <br><br>
+          <div v-if="view == 'tabela'">
+            <input v-model="filter" type="text" class="form-control">
+            <table class="table table-striped">
+              <thead>
+                <th v-for="coluna in colunas">
+                  <a @click="sortBy(coluna)">{{ coluna | ucwords}}</a>
+                </th>
+              </thead> 
+              <tbody>
+                <tr v-for="time in timesFiltered">
+                  <td>
+                    <img :src="time.escudo" style="height:30px;width:30px;" />
+                    <strong>{{ time.nome }}</strong>
 
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Pontos</th>
-                <th>GM</th>
-                <th>GS</th>
-                <th>Saldo</th>
-              </tr>
-            </thead> 
-            <tbody>
-              <tr v-for="time in times">
-                <td>
-                  <img :src="time.escudo" style="height:30px;width:30px;" />
-                  <strong>{{ time.nome }}</strong>
+                  </td>
+                  <td>{{ time.pontos }}</td>
+                  <td>{{ time.gm }}</td>
+                  <td>{{ time.gs }}</td>
+                  <td>{{ time | saldo }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-if="view == 'novojogo'">
+            <form class="form-inline">
+              <div class="form-group">
 
-                </td>
-                <td>{{ time.pontos }}</td>
-                <td>{{ time.gm }}</td>
-                <td>{{ time.gs }}</td>
-                <td>saldo</td>
-              </tr>
-            </tbody>
-          </table>
+                <input @keyup.enter="fimJogo" v-model="novoJogo.casa.gols" style="width:40px;" type="text" class="form-control">
+                <label class="control-label">
+                {{novoJogo.casa.time.nome}}
+                <img :src="novoJogo.casa.time.escudo" style="height:30px; width:30px;">
+                </label> 
+              </div>
+              <span>X</span>
+              <div class="form-group">
+
+                <label class="control-label">
+                <img :src="novoJogo.fora.time.escudo" style="height:30px; width:30px;">
+                {{novoJogo.fora.time.nome}}
+                </label> 
+                <input v-model="novoJogo.fora.gols" style="width:40px;" type="text" class="form-control">
+
+              </div>
+              <br><br>
+              <button @click="fimJogo" type="button" class="btn btn-primary btn-block">Fim de Jogo</button>
+
+            </form>
+          </div>
+
         </div>
-        
       </div>
-      
     </div>
-
 
     <script src="/dist/build.js"></script>
   </body>

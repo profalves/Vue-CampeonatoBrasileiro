@@ -1,15 +1,21 @@
 import Vue from 'vue'
 import App from './App.vue'
 import {Time} from './time';
-
+import _ from 'lodash';
 
 
 require('style-loader!css-loader!bootstrap/dist/css/bootstrap.min.css');
 
 
-new Vue({
+let meuVue = new Vue({
   el: '#app',
   data: {
+  	order: {
+  		keys: ['pontos', 'gm', 'gs'],
+  		sort: ['desc', 'desc', 'asc']
+  	},
+  	filter: '',
+  	colunas: ['nome', 'pontos', 'gm', 'gs', 'saldo'],
   	times: [
 		new Time('Palmeiras', require('./assets/palmeiras_60x60.png')),
 		new Time('Flamengo', require('./assets/flamengo_60x60.png')),
@@ -31,6 +37,62 @@ new Vue({
 		new Time('Figueirense', require('./assets/figueirense_60x60.png')),
 		new Time('Santa Cruz', require('./assets/santa_cruz_60x60.png')),
 		new Time('América-MG', require('./assets/america_mg_60x60.png'))
-  	]
+  	],
+  	novoJogo: {
+  		casa: {
+  			time:null,
+  			gols:0
+  		},
+  		fora: {
+  			time:null,
+  			gols:0
+  		}
+  	},
+  	view: 'tabela'
+  },
+  methods: {
+  	fimJogo() {
+  		let timeAdversario = this.novoJogo.fora.time;
+  		let gols = +this.novoJogo.casa.gols;
+  		let golsAdverario = +this.novoJogo.fora.gols;
+  		this.novoJogo.casa.time.fimJogo(timeAdversario, gols, golsAdverario);
+  		this.showView('tabela');
+  	},
+  	createNovoJogo() {
+  		let indexCasa = Math.floor(Math.random() * 20),
+  		indexFora = Math.floor(Math.random() * 20);
+
+	  	this.novoJogo.casa.time = this.times[indexCasa];
+	  	this.novoJogo.casa.gols = 0;
+	  	this.novoJogo.fora.time = this.times[indexFora];
+	  	this.novoJogo.fora.gols = 0;
+	  	this.showView('novojogo');
+  	},
+  	showView(view) {
+  		this.view = view;
+  	},
+  	sortBy(coluna) {
+  		this.order.keys = coluna;
+  		this.order.sort = this.order.sort == 'desc' ? 'asc' : 'desc';
+  	}
+  },
+  computed: {
+  	timesFiltered() {
+  		let colecao = _.orderBy(this.times, this.order.keys, this.order.sort);
+
+  		return _.filter(colecao, item => {
+  			return item.nome.indexOf(this.filter) >= 0;
+  		});
+  	}
+  },
+  filters: {
+  	saldo(time) {
+  		return time.gm - time.gs;
+  	},
+  	ucwords(value) {
+  		return value.charAt(0).toUpperCase() + value.slice(1);
+  	}
   }
-})
+});
+
+
